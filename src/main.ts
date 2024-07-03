@@ -2,22 +2,26 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ValidationPipe } from "@nestjs/common";
+import { ConfigService } from "./config/config.service";
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule);
 
-	app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe());
 
-	const config = new DocumentBuilder()
-		.setTitle("AITC Backend Example: NestJS Standard")
-		.setDescription("The AITC Backend Example API description")
-		.setVersion("1.0")
-		.addTag("aitc")
-		.build();
+  const configService = app.get(ConfigService);
 
-	const document = SwaggerModule.createDocument(app, config);
-	SwaggerModule.setup("api", app, document);
+  const config = new DocumentBuilder()
+    .setTitle("AITC Backend Example: NestJS Standard")
+    .setDescription("The AITC Backend Example API description")
+    .setVersion("1.0")
+    .addTag("aitc")
+    .addBearerAuth()
+    .build();
 
-	await app.listen(3000);
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup("api", app, document);
+
+  await app.listen(configService.get("PORT"));
 }
 bootstrap();
