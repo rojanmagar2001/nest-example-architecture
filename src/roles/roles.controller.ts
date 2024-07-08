@@ -6,9 +6,11 @@ import { IUserSession } from "src/common/interfaces";
 import { RoleResponseMapper } from "./mappers/role-response.mapper";
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiProperty,
   ApiTags,
 } from "@nestjs/swagger";
 import { RolesApiMessage } from "src/common/consts/api-message.const";
@@ -26,6 +28,10 @@ export class RolesController {
     description: RolesApiMessage.CREATED,
   })
   @ApiConflictResponse({ description: RolesApiMessage.ALREADY_EXISTS })
+  @ApiBody({
+    type: CreateRoleDto,
+    description: "Json Schema for creating a new role",
+  })
   public async create(
     @SessionUser() user: IUserSession,
     @Body() body: CreateRoleDto
@@ -39,6 +45,10 @@ export class RolesController {
   }
 
   @Get()
+  @ApiProperty({
+    description: "Get all roles",
+    type: MultipleRoleResponseMapper,
+  })
   @ApiBearerAuth()
   @ApiOkResponse({
     type: MultipleRoleResponseMapper,

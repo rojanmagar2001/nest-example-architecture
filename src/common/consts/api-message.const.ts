@@ -17,3 +17,14 @@ export const AuthApiMessage = {
   NOT_FOUND: "User not found",
   FAILED_TO_GENERATE_TOKEN: "Failed to generate token",
 };
+
+export const UsersApiMessage = {
+  CREATED: "User created successfully",
+  UPDATED: "User updated successfully",
+  DELETED: "User deleted successfully",
+  FETCHED: "User fetched successfully",
+  FETCHED_ALL: "Users fetched successfully",
+  EMAIL_EXISTS: "Email already exists",
+  USERNAME_EXISTS: "Username already exists",
+  INVALID_ROLE: "Invalid role",
+};

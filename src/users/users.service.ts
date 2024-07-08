@@ -1,35 +1,41 @@
-import { Injectable } from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
+import { SessionUserParam } from "src/common/interfaces";
+import { CreateUserDto } from "./dtos/create-user.dto";
 import { User } from "@prisma/client";
-import { PrismaService } from "src/prisma/prisma.service";
+import { UsersRepository } from "./users.repository";
+import { UsersApiMessage } from "src/common/consts/api-message.const";
+import { RolesRepository } from "src/roles/roles.repository";
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly rolesRepository: RolesRepository
+  ) {}
 
-  public async findOneByEmail(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { email } });
-  }
+  async create({
+    body,
+  }: SessionUserParam.ICreate<CreateUserDto>): Promise<User> {
+    const emailExists = await this.usersRepository.findOneByEmail(body.email);
 
-  public async findOneByUsername(username: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { username } });
-  }
+    if (emailExists) {
+      throw new ConflictException(UsersApiMessage.EMAIL_EXISTS);
+    }
 
-  public async findOneByUsernameOrEmail(user: string): Promise<User | null> {
-    return this.prisma.user.findFirst({
-      where: {
-        OR: [{ username: user }, { email: user }],
-      },
-    });
-  }
+    const usernameExists = await this.usersRepository.findOneByUsername(
+      body.username
+    );
 
-  public async checkUserExists(
-    username: string,
-    email: string
-  ): Promise<User | null> {
-    return this.prisma.user.findFirst({
-      where: {
-        OR: [{ username }, { email }],
-      },
-    });
+    if (usernameExists) {
+      throw new ConflictException(UsersApiMessage.USERNAME_EXISTS);
+    }
+
+    const role = await this.rolesRepository.findById(body.roleId);
+
+    if (!role) {
+      throw new ConflictException(UsersApiMessage.INVALID_ROLE);
+    }
+
+    return this.usersRepository.create(body);
   }
 }

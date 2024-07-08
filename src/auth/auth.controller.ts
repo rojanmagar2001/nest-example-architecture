@@ -20,6 +20,10 @@ export class AuthController {
   constructor(private readonly service: AuthService) {}
 
   @Post("signin")
+  @ApiProperty({
+    description: "Sign in",
+    type: AuthSignInResponseMapper,
+  })
   @ApiCreatedResponse({
     type: AuthSignInResponseMapper,
     description: AuthApiMessage.SIGNIN,
