@@ -38,4 +38,8 @@ export class UsersService {
 
     return this.usersRepository.create(body);
   }
+
+  async get(_params: SessionUserParam.IGetAll): Promise<User[]> {
+    return this.usersRepository.findAll();
+  }
 }

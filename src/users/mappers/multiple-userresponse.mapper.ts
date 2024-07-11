@@ -5,9 +5,12 @@ import {
   BaseResponseMapper,
   createResponseMapper,
 } from "src/common/mappers/base-response.mapper";
+import { RoleEntity } from "src/roles/entities/role.entity";
 import { UserEntity } from "../entities/user.entity";
 
-export class UserResponseMapper extends BaseResponseMapper<User> {
+export class MultipleUserResponseMapper extends BaseResponseMapper<
+  UserEntity[]
+> {
   @ApiProperty({
     description: "Response message",
     example: RolesApiMessage.CREATED,
@@ -18,10 +21,14 @@ export class UserResponseMapper extends BaseResponseMapper<User> {
   @ApiProperty({
     description: "Response data",
     type: UserEntity,
+    isArray: true,
   })
-  public data: UserEntity;
+  public data: UserEntity[];
 
-  public static map(message: string, data: User): UserResponseMapper {
-    return createResponseMapper(UserResponseMapper, message, data);
+  public static map(
+    message: string,
+    data: UserEntity[]
+  ): MultipleUserResponseMapper {
+    return createResponseMapper(MultipleUserResponseMapper, message, data);
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { UserResponseMapper } from "./mappers/user-response.mapper";
@@ -10,7 +10,9 @@ import {
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiOkResponse,
 } from "@nestjs/swagger";
+import { MultipleUserResponseMapper } from "./mappers/multiple-userresponse.mapper";
 
 @Controller("users")
 export class UsersController {
@@ -36,5 +38,19 @@ export class UsersController {
     const data = await this.usersService.create({ body, user });
 
     return UserResponseMapper.map(UsersApiMessage.CREATED, data);
+  }
+
+  @Get()
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    type: MultipleUserResponseMapper,
+    description: UsersApiMessage.FETCHED_ALL,
+  })
+  public async get(
+    @SessionUser() user: IUserSession
+  ): Promise<MultipleUserResponseMapper> {
+    const data = await this.usersService.get({ user });
+
+    return MultipleUserResponseMapper.map(UsersApiMessage.FETCHED_ALL, data);
   }
 }

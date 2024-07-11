@@ -40,4 +40,8 @@ export class UsersRepository {
   public async create(data: Prisma.UserCreateArgs["data"]): Promise<User> {
     return this.prisma.user.create({ data });
   }
+
+  public async findAll(): Promise<User[]> {
+    return this.prisma.user.findMany();
+  }
 }
